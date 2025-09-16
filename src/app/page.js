@@ -13,7 +13,7 @@ export default function RifaPage() {
   const [pixData, setPixData] = useState(null);
   const [error, setError] = useState('');
   const [debugInfo, setDebugInfo] = useState('');
-  const TICKET_PRICE = 3.49;
+  const TICKET_PRICE = 3.79;
 
   const formatCurrency = (value) => {
     return value.toLocaleString('pt-BR', {
