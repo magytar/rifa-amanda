@@ -134,6 +134,9 @@ export default function RifaPage() {
             <p className="text-white/90 text-lg font-medium">
               Bilhetes por apenas {formatCurrency(TICKET_PRICE)}
             </p>
+            <p className="text-white/90 text-lg font-medium">
+              @amandaolveiraa2a
+            </p>
           </div>
           {/* Elementos decorativos */}
           <div className="absolute top-2 left-2 w-4 h-4 bg-white/20 rounded-full animate-pulse"></div>
@@ -193,7 +196,7 @@ export default function RifaPage() {
                       type="button"
                       onClick={() => setFormData(prev => ({ 
                         ...prev, 
-                        tickets: prev.tickets + 1 
+                        tickets: Math.min(50,prev.tickets + 1) 
                       }))}
                       className="bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold w-12 h-12 rounded-full text-xl transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg"
                     >
@@ -201,7 +204,7 @@ export default function RifaPage() {
                     </button>
                   </div>
                   <div className="text-center text-sm text-gray-600">
-                    {formData.tickets} bilhete{formData.tickets > 1 ? 's' : ''}
+                    {formData.tickets} bilhete{formData.tickets > 1 ? 's' : ''} (Minimo 1 | Maximo 50)
                   </div>
                 </div>
               </div>
