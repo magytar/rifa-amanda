@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function RifaPage() {
   const [formData, setFormData] = useState({
@@ -48,26 +49,13 @@ export default function RifaPage() {
     setPixData(null);
 
     try {
-      const totalAmount = Math.round(formData.tickets * TICKET_PRICE * 100); // Converter para centavos
+      const totalAmount = Math.round(formData.tickets * TICKET_PRICE * 100);
       const identifier = generateIdentifier();
 
-      // Simulação da resposta da API para demonstração
-      // Em produção, esta chamada deve ser feita no backend para evitar problemas de CORS
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simula delay da API
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Simulação da resposta da API Bolt Pagamentos
-      const mockData = {
-        success: true,
-        transaction_id: identifier,
-        amount: totalAmount,
-        pix_code: "00020126580014br.gov.bcb.pix013636c8ac70-c0eb-4cb2-86c5-ad5e50c9f3345204000053039865802BR5925Cliente Rifa6009SAO PAULO61080540900062070503***630445C6",
-        qr_code: "iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADh0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uMy4yLjIsIGh0dHA6Ly9tYXRwbG90bGliLm9yZy+WH4yJAAANdElEQVR4nO3dT6hcdxnG8eepJkEtKhqNpSZxoVZwISJeRBeCCLpQQRdCF4KCuBBcuHAhiCJuXBUXggsXLlyICC5ciBtBXQgu2oULwZULEVy4EFy4EBeuBBcuBBeuBBcuBBeuBBcuBBeuBBcuBBeuBBcuBBeuBBeuBBeuBBcuBBeuBBcuBBeuBBcuBBeuBBeuBBeuBBeuBBeuBBcuBBeuBBcuBBeuBBcuBBeuBBeuBBeuBBeuBBcuBBeuBBeuBBeuBBeuBBeuBBeuBBeuBBeuBBeuBBeuBBeuBBcuBBeuBBeuBBeuBBcuBBeuBBcuBBeuBBeuBBeuBBeuBBcuBBeuBBeuBBeuBBcuBBeuBBeu",
-        expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutos
-      };
-
-      const valor = totalAmount/100
+      const valor = totalAmount/100;
        
-      //Código real para produção - descomente estas linhas e comente a simulação acima:
       const response = await fetch('/api/create-pix-payment', {
         method: 'POST',
         headers: {
@@ -88,12 +76,12 @@ export default function RifaPage() {
       }
 
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       setPixData(data);
-      setBase64(data.pix.base64)
-      setCodepix(data.pix.code)
+      setBase64(data.pix.base64);
+      setCodepix(data.pix.code);
 
-      setPixData(mockData);
+
     } catch (err) {
       setError('Erro ao processar pagamento. Tente novamente.');
       console.error('Erro:', err);
@@ -103,9 +91,14 @@ export default function RifaPage() {
   };
 
   const copyPixCode = () => {
-    if (pixData?.pix_code) {
-      navigator.clipboard.writeText(pixData.pix_code);
-      alert('Código PIX copiado!');
+    if (pixData.pix.code) {
+      navigator.clipboard.writeText(pixData.pix.code);
+      // Toast visual ao invés de alert
+      const toast = document.createElement('div');
+      toast.innerHTML = '✅ Código PIX copiado!';
+      toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-full font-semibold z-50 animate-bounce';
+      document.body.appendChild(toast);
+      setTimeout(() => document.body.removeChild(toast), 3000);
     }
   };
 
@@ -114,208 +107,233 @@ export default function RifaPage() {
   };
 
   return (
-    <div className="h-[100dvh] bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800 p-4 flex items-center justify-center overflow-y-auto">
-      <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-2xl border border-white/20">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-block p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
-            <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-            </svg>
+    <div className="min-h-screen bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600 p-3 flex items-center justify-center">
+      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-md mx-auto border border-white/20 overflow-hidden">
+        
+        {/* Header com design melhorado */}
+        <div className="bg-gradient-to-r from-pink-500 to-purple-600 px-6 py-8 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="relative z-10">
+            <div className="inline-block p-3 bg-white/20 backdrop-blur-sm rounded-full mb-4">
+              <span className="text-4xl">🎯</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+              🌟 RIFA DA AMANDA 🌟
+            </h1>
+            <p className="text-white/90 text-lg font-medium">
+              Bilhetes por apenas {formatCurrency(TICKET_PRICE)}
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-            🎲 SUPER RIFA
-          </h1>
-          <p className="text-xl text-gray-600 font-medium">
-            Cada bilhete por apenas {formatCurrency(TICKET_PRICE)}
-          </p>
+          {/* Elementos decorativos */}
+          <div className="absolute top-2 left-2 w-4 h-4 bg-white/20 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-4 right-4 w-3 h-3 bg-white/30 rounded-full animate-pulse delay-1000"></div>
+          <div className="absolute top-8 right-8 w-2 h-2 bg-white/25 rounded-full animate-pulse delay-500"></div>
         </div>
 
-        {!pixData ? (
-          <div className="space-y-6">
-            {/* Telefone */}
-            <div className="space-y-2">
-              <label className="block text-lg font-semibold text-gray-700">
-                Telefone *
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={(e) => {
-                  const formatted = formatPhone(e.target.value);
-                  setFormData(prev => ({ ...prev, phone: formatted }));
-                }}
-                maxLength="15"
-                className="w-full p-4 text-lg border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
-                placeholder="(11) 99999-9999"
-              />
-            </div>
-
-            {/* CPF */}
-            <div className="space-y-2">
-              <label className="block text-lg font-semibold text-gray-700">
-                CPF *
-              </label>
-              <input
-                type="text"
-                name="document"
-                value={formData.document}
-                onChange={(e) => {
-                  const formatted = formatDocument(e.target.value);
-                  setFormData(prev => ({ ...prev, document: formatted }));
-                }}
-                maxLength="14"
-                className="w-full p-4 text-lg border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
-                placeholder="000.000.000-00"
-              />
-            </div>
-
-            {/* Quantidade de Tickets */}
-            <div className="space-y-2">
-              <label className="block text-lg font-semibold text-gray-700">
-                Quantidade de Bilhetes *
-              </label>
-              <div className="flex items-center space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ 
-                    ...prev, 
-                    tickets: Math.max(1, prev.tickets - 1) 
-                  }))}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-xl text-xl transition-colors"
-                >
-                  −
-                </button>
+        <div className="p-6">
+          {!pixData ? (
+            <div className="space-y-5">
+              {/* Telefone com design melhorado */}
+              <div className="space-y-2">
+                <label className="flex items-center text-sm font-semibold text-gray-700">
+                  <span className="mr-2">📱</span>
+                  Telefone *
+                </label>
                 <input
-                  type="number"
-                  name="tickets"
-                  value={formData.tickets}
-                  onChange={handleInputChange}
-                  min="1"
-                  className="flex-1 p-4 text-xl font-bold text-center border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={(e) => {
+                    const formatted = formatPhone(e.target.value);
+                    setFormData(prev => ({ ...prev, phone: formatted }));
+                  }}
+                  maxLength="15"
+                  className="w-full p-4 text-base border-2 border-gray-200 rounded-2xl focus:border-pink-400 focus:outline-none transition-all duration-300 focus:shadow-lg focus:shadow-pink-100"
+                  placeholder="(11) 99999-9999"
                 />
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ 
-                    ...prev, 
-                    tickets: prev.tickets + 1 
-                  }))}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-xl text-xl transition-colors"
-                >
-                  +
-                </button>
               </div>
-            </div>
 
-            {/* Total */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200">
-              <div className="text-center">
-                <p className="text-lg text-gray-600 mb-2">Total a pagar:</p>
-                <p className="text-4xl font-bold text-green-600">
-                  {formatCurrency(formData.tickets * TICKET_PRICE)}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {formData.tickets} bilhete{formData.tickets > 1 ? 's' : ''} × {formatCurrency(TICKET_PRICE)}
-                </p>
+              {/* CPF com design melhorado */}
+              <div className="space-y-2">
+                <label className="flex items-center text-sm font-semibold text-gray-700">
+                  <span className="mr-2">🆔</span>
+                  CPF *
+                </label>
+                <input
+                  type="text"
+                  name="document"
+                  value={formData.document}
+                  onChange={(e) => {
+                    const formatted = formatDocument(e.target.value);
+                    setFormData(prev => ({ ...prev, document: formatted }));
+                  }}
+                  maxLength="14"
+                  className="w-full p-4 text-base border-2 border-gray-200 rounded-2xl focus:border-pink-400 focus:outline-none transition-all duration-300 focus:shadow-lg focus:shadow-pink-100"
+                  placeholder="000.000.000-00"
+                />
               </div>
-            </div>
 
-            {error && (
-              <div className="bg-red-50 border-2 border-red-200 text-red-700 px-6 py-4 rounded-xl text-center">
-                {error}
-              </div>
-            )}
-
-            {/* Botão de Comprar */}
-            <button
-              onClick={handleSubmit}
-              disabled={loading || !validateForm()}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 px-8 rounded-xl text-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:transform-none shadow-lg"
-            >
-              {loading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                  <span>Processando...</span>
+              {/* Quantidade de Tickets redesenhada para mobile */}
+              <div className="space-y-3">
+                <label className="flex items-center text-sm font-semibold text-gray-700">
+                  <span className="mr-2">🎫</span>
+                  Quantidade de Bilhetes *
+                </label>
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-2xl border-2 border-gray-200">
+                  <div className="flex items-center justify-center space-x-4 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ 
+                        ...prev, 
+                        tickets: Math.max(1, prev.tickets - 1) 
+                      }))}
+                      className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold w-12 h-12 rounded-full text-xl transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg"
+                    >
+                      −
+                    </button>
+                    <div className="flex-1 text-center">
+                      <div className="text-3xl font-bold text-gray-800 bg-white rounded-xl py-3 border-2 border-gray-200 shadow-inner">
+                        {formData.tickets}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ 
+                        ...prev, 
+                        tickets: prev.tickets + 1 
+                      }))}
+                      className="bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold w-12 h-12 rounded-full text-xl transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div className="text-center text-sm text-gray-600">
+                    {formData.tickets} bilhete{formData.tickets > 1 ? 's' : ''}
+                  </div>
                 </div>
-              ) : (
-                `💳 Comprar ${formData.tickets} Bilhete${formData.tickets > 1 ? 's' : ''}`
+              </div>
+
+              {/* Total redesenhado */}
+              <div className="bg-gradient-to-r from-emerald-400 to-green-500 p-5 rounded-2xl shadow-lg">
+                <div className="text-center text-white">
+                  <p className="text-sm font-medium mb-1 opacity-90">💰 Total a pagar</p>
+                  <p className="text-3xl sm:text-4xl font-bold mb-1">
+                    {formatCurrency(formData.tickets * TICKET_PRICE)}
+                  </p>
+                  <p className="text-xs opacity-90">
+                    {formData.tickets} × {formatCurrency(TICKET_PRICE)}
+                  </p>
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-xl">
+                  <div className="flex items-center">
+                    <span className="mr-2">⚠️</span>
+                    {error}
+                  </div>
+                </div>
               )}
-            </button>
-          </div>
-        ) : (
-          /* Tela PIX */
-          <div className="text-center space-y-6">
-            <div className="inline-block p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-4">
-              <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-            </div>
-            
-            <h2 className="text-3xl font-bold text-green-600 mb-4">
-              🎉 Pagamento Gerado!
-            </h2>
-            
-            <div className="bg-gray-50 p-6 rounded-xl border-2 border-gray-200 mb-6">
-              <p className="text-lg text-gray-700 mb-4">
-                <strong>Total:</strong> {formatCurrency(formData.tickets * TICKET_PRICE)}
-              </p>
-              <p className="text-sm text-gray-600">
-                {formData.tickets} bilhete{formData.tickets > 1 ? 's' : ''} para <strong>Cliente</strong>
-              </p>
-            </div>
 
-            {pixData.qr_code && (
-              <div className="bg-white p-6 rounded-xl border-2 border-gray-200 mb-6">
-                <p className="text-lg font-semibold text-gray-700 mb-4">
-                  📱 Escaneie o QR Code:
-                </p>
-                <img 
-                  src={`data:image/png;base64,${base64}`} 
-                  alt="QR Code PIX" 
-                  className="mx-auto max-w-full h-auto rounded-lg shadow-md"
-                />
+              {/* Botão de Comprar melhorado */}
+              <button
+                onClick={handleSubmit}
+                disabled={loading || !validateForm()}
+                className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-5 px-6 rounded-2xl text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:transform-none shadow-lg disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                    <span>Processando...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-2">
+                    <span>🛒</span>
+                    <span>Comprar {formData.tickets} Bilhete{formData.tickets > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+              </button>
+            </div>
+          ) : (
+            /* Tela PIX otimizada para mobile */
+            <div className="text-center space-y-5">
+              <div className="inline-block p-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full mb-4 animate-bounce">
+                <span className="text-4xl">🎉</span>
               </div>
-            )}
-
-            {pixData.pix_code && (
-              <div className="bg-gray-50 p-6 rounded-xl border-2 border-gray-200">
-                <p className="text-lg font-semibold text-gray-700 mb-4">
-                  💻 Ou copie o código PIX:
+              
+              <h2 className="text-2xl font-bold text-green-600 mb-4">
+                Pagamento Gerado!
+              </h2>
+              
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border-2 border-blue-200 mb-4">
+                <p className="text-lg text-gray-700 mb-2">
+                  <strong>💰 Total:</strong> {formatCurrency(formData.tickets * TICKET_PRICE)}
                 </p>
-                <div className="bg-white p-4 rounded-lg border text-sm font-mono break-all text-gray-800 mb-4">
-                  {codepix}
+                <p className="text-sm text-gray-600">
+                  🎫 {formData.tickets} bilhete{formData.tickets > 1 ? 's' : ''} para <strong>Amanda</strong>
+                </p>
+              </div>
+
+              {pixData.pix.base64 && (
+                <div className="bg-white p-5 rounded-2xl border-2 border-gray-200 mb-5 shadow-lg">
+                  <p className="text-base font-semibold text-gray-700 mb-4">
+                    📱 Escaneie o QR Code:
+                  </p>
+                  <div className="bg-gray-50 p-4 rounded-xl">
+                    <Image
+                      src={`data:image/png;base64,${pixData.pix.base64}`}
+                      alt="QR Code PIX"
+                      className="mx-auto max-w-full h-auto rounded-lg shadow-md"
+                      width={300}   // defina largura
+                      height={300}  // defina altura
+                      unoptimized   // importante para base64
+                    />
+                  </div>
                 </div>
-                <button
-                  onClick={copyPixCode}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-                >
-                  📋 Copiar Código PIX
-                </button>
+              )}
+
+              {pixData.pix.code && (
+                <div className="bg-gray-50 p-5 rounded-2xl border-2 border-gray-200">
+                  <p className="text-base font-semibold text-gray-700 mb-4">
+                    💻 Ou copie o código PIX:
+                  </p>
+                  <div className="bg-white p-4 rounded-xl border text-xs font-mono break-all text-gray-800 mb-4 max-h-20 overflow-y-auto">
+                    {codepix}
+                  </div>
+                  <button
+                    onClick={copyPixCode}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+                  >
+                    📋 Copiar Código PIX
+                  </button>
+                </div>
+              )}
+
+              <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-xl">
+                <div className="flex items-start space-x-2">
+                  <span className="text-lg">⏱️</span>
+                  <div className="text-sm">
+                    <strong>Importante:</strong> Realize o pagamento em até 15 minutos!
+                  </div>
+                </div>
               </div>
-            )}
 
-            <div className="bg-yellow-50 border-2 border-yellow-200 text-yellow-800 px-6 py-4 rounded-xl">
-              <p className="text-sm">
-                ⏱️ <strong>Importante:</strong> Realize o pagamento em até 30 minutos para garantir sua participação!
-              </p>
+              <button
+                onClick={() => {
+                  setPixData(null);
+                  setFormData({
+                    phone: '',
+                    document: '',
+                    tickets: 1
+                  });
+                }}
+                className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+              >
+                🔄 Nova Compra
+              </button>
             </div>
-
-            <button
-              onClick={() => {
-                setPixData(null);
-                setFormData({
-                  phone: '',
-                  document: '',
-                  tickets: 1
-                });
-              }}
-              className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-            >
-              🔄 Nova Compra
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
