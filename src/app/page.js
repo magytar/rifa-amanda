@@ -114,148 +114,209 @@ export default function RifaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800 p-4 flex items-center justify-center">
-  <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md sm:max-w-2xl border border-white/20">
-    {/* Header */}
-    <div className="text-center mb-6 sm:mb-8">
-      <div className="inline-block p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
-        <svg className="w-10 h-10 sm:w-12 sm:h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </div>
-      <h1 className="text-3xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-        🎲 SUPER RIFA
-      </h1>
-      <p className="text-lg sm:text-xl text-gray-600 font-medium">
-        Cada bilhete por apenas {formatCurrency(TICKET_PRICE)}
-      </p>
-    </div>
-
-    {!pixData ? (
-      <div className="space-y-6">
-        {/* Telefone */}
-        <div className="space-y-2">
-          <label className="block text-base sm:text-lg font-semibold text-gray-700">Telefone *</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={(e) => {
-              const formatted = formatPhone(e.target.value);
-              setFormData((prev) => ({ ...prev, phone: formatted }));
-            }}
-            maxLength="15"
-            className="w-full p-3 sm:p-4 text-base sm:text-lg border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
-            placeholder="(11) 99999-9999"
-          />
+    <div className="h-[100dvh] bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800 p-4 flex items-center justify-center overflow-y-auto">
+      <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-2xl border border-white/20">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-block p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
+            <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+            🎲 SUPER RIFA
+          </h1>
+          <p className="text-xl text-gray-600 font-medium">
+            Cada bilhete por apenas {formatCurrency(TICKET_PRICE)}
+          </p>
         </div>
 
-        {/* CPF */}
-        <div className="space-y-2">
-          <label className="block text-base sm:text-lg font-semibold text-gray-700">CPF *</label>
-          <input
-            type="text"
-            name="document"
-            value={formData.document}
-            onChange={(e) => {
-              const formatted = formatDocument(e.target.value);
-              setFormData((prev) => ({ ...prev, document: formatted }));
-            }}
-            maxLength="14"
-            className="w-full p-3 sm:p-4 text-base sm:text-lg border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
-            placeholder="000.000.000-00"
-          />
-        </div>
+        {!pixData ? (
+          <div className="space-y-6">
+            {/* Telefone */}
+            <div className="space-y-2">
+              <label className="block text-lg font-semibold text-gray-700">
+                Telefone *
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={(e) => {
+                  const formatted = formatPhone(e.target.value);
+                  setFormData(prev => ({ ...prev, phone: formatted }));
+                }}
+                maxLength="15"
+                className="w-full p-4 text-lg border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                placeholder="(11) 99999-9999"
+              />
+            </div>
 
-        {/* Quantidade de Tickets */}
-        <div className="space-y-2">
-          <label className="block text-base sm:text-lg font-semibold text-gray-700">
-            Quantidade de Bilhetes *
-          </label>
-          <div className="flex items-center space-x-3 sm:space-x-4">
+            {/* CPF */}
+            <div className="space-y-2">
+              <label className="block text-lg font-semibold text-gray-700">
+                CPF *
+              </label>
+              <input
+                type="text"
+                name="document"
+                value={formData.document}
+                onChange={(e) => {
+                  const formatted = formatDocument(e.target.value);
+                  setFormData(prev => ({ ...prev, document: formatted }));
+                }}
+                maxLength="14"
+                className="w-full p-4 text-lg border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                placeholder="000.000.000-00"
+              />
+            </div>
+
+            {/* Quantidade de Tickets */}
+            <div className="space-y-2">
+              <label className="block text-lg font-semibold text-gray-700">
+                Quantidade de Bilhetes *
+              </label>
+              <div className="flex items-center space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    tickets: Math.max(1, prev.tickets - 1) 
+                  }))}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-xl text-xl transition-colors"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  name="tickets"
+                  value={formData.tickets}
+                  onChange={handleInputChange}
+                  min="1"
+                  className="flex-1 p-4 text-xl font-bold text-center border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    tickets: prev.tickets + 1 
+                  }))}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-xl text-xl transition-colors"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Total */}
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200">
+              <div className="text-center">
+                <p className="text-lg text-gray-600 mb-2">Total a pagar:</p>
+                <p className="text-4xl font-bold text-green-600">
+                  {formatCurrency(formData.tickets * TICKET_PRICE)}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {formData.tickets} bilhete{formData.tickets > 1 ? 's' : ''} × {formatCurrency(TICKET_PRICE)}
+                </p>
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border-2 border-red-200 text-red-700 px-6 py-4 rounded-xl text-center">
+                {error}
+              </div>
+            )}
+
+            {/* Botão de Comprar */}
             <button
-              type="button"
-              onClick={() =>
-                setFormData((prev) => ({
-                  ...prev,
-                  tickets: Math.max(1, prev.tickets - 1),
-                }))
-              }
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-xl text-lg sm:text-xl transition-colors"
+              onClick={handleSubmit}
+              disabled={loading || !validateForm()}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-6 px-8 rounded-xl text-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:transform-none shadow-lg"
             >
-              −
-            </button>
-            <input
-              type="number"
-              name="tickets"
-              value={formData.tickets}
-              onChange={handleInputChange}
-              min="1"
-              className="flex-1 p-3 sm:p-4 text-lg sm:text-xl font-bold text-center border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
-            />
-            <button
-              type="button"
-              onClick={() =>
-                setFormData((prev) => ({
-                  ...prev,
-                  tickets: prev.tickets + 1,
-                }))
-              }
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-xl text-lg sm:text-xl transition-colors"
-            >
-              +
+              {loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                  <span>Processando...</span>
+                </div>
+              ) : (
+                `💳 Comprar ${formData.tickets} Bilhete${formData.tickets > 1 ? 's' : ''}`
+              )}
             </button>
           </div>
-        </div>
+        ) : (
+          /* Tela PIX */
+          <div className="text-center space-y-6">
+            <div className="inline-block p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-4">
+              <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            
+            <h2 className="text-3xl font-bold text-green-600 mb-4">
+              🎉 Pagamento Gerado!
+            </h2>
+            
+            <div className="bg-gray-50 p-6 rounded-xl border-2 border-gray-200 mb-6">
+              <p className="text-lg text-gray-700 mb-4">
+                <strong>Total:</strong> {formatCurrency(formData.tickets * TICKET_PRICE)}
+              </p>
+              <p className="text-sm text-gray-600">
+                {formData.tickets} bilhete{formData.tickets > 1 ? 's' : ''} para <strong>Cliente</strong>
+              </p>
+            </div>
 
-        {/* Total */}
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 sm:p-6 rounded-xl border-2 border-green-200">
-          <div className="text-center">
-            <p className="text-base sm:text-lg text-gray-600 mb-1 sm:mb-2">Total a pagar:</p>
-            <p className="text-2xl sm:text-4xl font-bold text-green-600">
-              {formatCurrency(formData.tickets * TICKET_PRICE)}
-            </p>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              {formData.tickets} bilhete{formData.tickets > 1 ? "s" : ""} ×{" "}
-              {formatCurrency(TICKET_PRICE)}
-            </p>
-          </div>
-        </div>
+            {pixData.qr_code && (
+              <div className="bg-white p-6 rounded-xl border-2 border-gray-200 mb-6">
+                <p className="text-lg font-semibold text-gray-700 mb-4">
+                  📱 Escaneie o QR Code:
+                </p>
+                <img 
+                  src={`data:image/png;base64,${base64}`} 
+                  alt="QR Code PIX" 
+                  className="mx-auto max-w-full h-auto rounded-lg shadow-md"
+                />
+              </div>
+            )}
 
-        {error && (
-          <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-center text-sm sm:text-base">
-            {error}
+            {pixData.pix_code && (
+              <div className="bg-gray-50 p-6 rounded-xl border-2 border-gray-200">
+                <p className="text-lg font-semibold text-gray-700 mb-4">
+                  💻 Ou copie o código PIX:
+                </p>
+                <div className="bg-white p-4 rounded-lg border text-sm font-mono break-all text-gray-800 mb-4">
+                  {codepix}
+                </div>
+                <button
+                  onClick={copyPixCode}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                >
+                  📋 Copiar Código PIX
+                </button>
+              </div>
+            )}
+
+            <div className="bg-yellow-50 border-2 border-yellow-200 text-yellow-800 px-6 py-4 rounded-xl">
+              <p className="text-sm">
+                ⏱️ <strong>Importante:</strong> Realize o pagamento em até 30 minutos para garantir sua participação!
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                setPixData(null);
+                setFormData({
+                  phone: '',
+                  document: '',
+                  tickets: 1
+                });
+              }}
+              className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            >
+              🔄 Nova Compra
+            </button>
           </div>
         )}
-
-        {/* Botão de Comprar */}
-        <button
-          onClick={handleSubmit}
-          disabled={loading || !validateForm()}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 sm:py-6 px-6 sm:px-8 rounded-xl text-lg sm:text-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:transform-none shadow-lg"
-        >
-          {loading ? (
-            <div className="flex items-center justify-center space-x-2">
-              <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-white"></div>
-              <span>Processando...</span>
-            </div>
-          ) : (
-            `💳 Comprar ${formData.tickets} Bilhete${formData.tickets > 1 ? "s" : ""}`
-          )}
-        </button>
       </div>
-    ) : (
-      /* Tela PIX */
-      <div className="text-center space-y-6">
-        {/* ... mantém igual ... */}
-      </div>
-    )}
-  </div>
-</div>
-
+    </div>
   );
 }
