@@ -12,17 +12,8 @@ export default function RifaPage() {
   const [loading, setLoading] = useState(false);
   const [pixData, setPixData] = useState(null);
   const [error, setError] = useState('');
-  const [base64, setBase64] = useState("")
-  const [codepix, setCodepix] = useState("")
+  const [debugInfo, setDebugInfo] = useState('');
   const TICKET_PRICE = 3.49;
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
   const formatCurrency = (value) => {
     return value.toLocaleString('pt-BR', {
@@ -47,53 +38,72 @@ export default function RifaPage() {
     setLoading(true);
     setError('');
     setPixData(null);
+    setDebugInfo('');
 
     try {
-      const totalAmount = Math.round(formData.tickets * TICKET_PRICE * 100);
       const identifier = generateIdentifier();
+      const cleanPhone = formData.phone.replace(/\D/g, '');
+      const cleanDocument = formData.document.replace(/\D/g, '');
+      const valor = Number((formData.tickets * TICKET_PRICE).toFixed(2));
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Validações no frontend
+      if (cleanPhone.length < 10) {
+        throw new Error('Telefone deve ter pelo menos 10 dígitos');
+      }
 
-      const valor = totalAmount/100;
-       
-      const response = await fetch('/api/create-pix-payment', {
+      if (formData.tickets <= 0) {
+        throw new Error('Quantidade de bilhetes deve ser maior que zero');
+      }
+
+      // Preparar dados para envio
+      const requestBody = {
+        identifier: identifier,
+        amount: valor,
+        phone: cleanPhone,
+        document: "70530854147",
+        tickets: formData.tickets
+      };
+
+      // Só incluir documento se for válido (11 dígitos)
+      if (cleanDocument.length === 11) {
+        requestBody.document = cleanDocument;
+      }
+
+      console.log('Dados enviados:', requestBody);
+      setDebugInfo(`Enviando dados: ${JSON.stringify(requestBody, null, 2)}`);
+
+      const response = await fetch('/api/create-pix-payment/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          identifier: identifier,
-          amount: valor,
-          phone: formData.phone,
-          document: formData.document.replace(/\D/g, ''),
-          tickets: formData.tickets
-        })
+        body: JSON.stringify(requestBody)
       });
 
+      const responseData = await response.json();
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erro ao processar pagamento');
+        console.error('Erro da API:', responseData);
+        setDebugInfo(`Erro da API: ${JSON.stringify(responseData, null, 2)}`);
+        throw new Error(responseData.message || `Erro ${response.status}: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      console.log(data);
-      setPixData(data);
-      setBase64(data.pix.base64);
-      setCodepix(data.pix.code);
-
+      console.log('Resposta da API:', responseData);
+      setPixData(responseData);
 
     } catch (err) {
-      setError('Erro ao processar pagamento. Tente novamente.');
-      console.error('Erro:', err);
+      console.error('Erro completo:', err);
+      setError(err.message || 'Erro ao processar pagamento. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
 
   const copyPixCode = () => {
-    if (pixData.pix.code) {
-      navigator.clipboard.writeText(pixData.pix.code);
-      // Toast visual ao invés de alert
+    const code = pixData?.pix?.code || pixData?.code;
+    if (code) {
+      navigator.clipboard.writeText(code);
+      // Toast visual
       const toast = document.createElement('div');
       toast.innerHTML = '✅ Código PIX copiado!';
       toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-full font-semibold z-50 animate-bounce';
@@ -103,14 +113,15 @@ export default function RifaPage() {
   };
 
   const validateForm = () => {
-    return formData.phone && formData.document && formData.tickets > 0;
+    const cleanPhone = formData.phone.replace(/\D/g, '');
+    return cleanPhone.length >= 10 && formData.tickets > 0;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600 p-3 flex items-center justify-center">
       <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-md mx-auto border border-white/20 overflow-hidden">
         
-        {/* Header com design melhorado */}
+        {/* Header */}
         <div className="bg-gradient-to-r from-pink-500 to-purple-600 px-6 py-8 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="relative z-10">
@@ -133,7 +144,7 @@ export default function RifaPage() {
         <div className="p-6">
           {!pixData ? (
             <div className="space-y-5">
-              {/* Telefone com design melhorado */}
+              {/* Telefone */}
               <div className="space-y-2">
                 <label className="flex items-center text-sm font-semibold text-gray-700">
                   <span className="mr-2">📱</span>
@@ -153,27 +164,9 @@ export default function RifaPage() {
                 />
               </div>
 
-              {/* CPF com design melhorado */}
-              <div className="space-y-2">
-                <label className="flex items-center text-sm font-semibold text-gray-700">
-                  <span className="mr-2">🆔</span>
-                  CPF *
-                </label>
-                <input
-                  type="text"
-                  name="document"
-                  value={formData.document}
-                  onChange={(e) => {
-                    const formatted = formatDocument(e.target.value);
-                    setFormData(prev => ({ ...prev, document: formatted }));
-                  }}
-                  maxLength="14"
-                  className="w-full p-4 text-base border-2 border-gray-200 rounded-2xl focus:border-pink-400 focus:outline-none transition-all duration-300 focus:shadow-lg focus:shadow-pink-100"
-                  placeholder="000.000.000-00"
-                />
-              </div>
+              {/* CPF - OPCIONAL */}
 
-              {/* Quantidade de Tickets redesenhada para mobile */}
+              {/* Quantidade de Tickets */}
               <div className="space-y-3">
                 <label className="flex items-center text-sm font-semibold text-gray-700">
                   <span className="mr-2">🎫</span>
@@ -213,7 +206,7 @@ export default function RifaPage() {
                 </div>
               </div>
 
-              {/* Total redesenhado */}
+              {/* Total */}
               <div className="bg-gradient-to-r from-emerald-400 to-green-500 p-5 rounded-2xl shadow-lg">
                 <div className="text-center text-white">
                   <p className="text-sm font-medium mb-1 opacity-90">💰 Total a pagar</p>
@@ -226,16 +219,17 @@ export default function RifaPage() {
                 </div>
               </div>
 
+              {/* Erro */}
               {error && (
                 <div className="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-xl">
-                  <div className="flex items-center">
-                    <span className="mr-2">⚠️</span>
-                    {error}
+                  <div className="flex items-start">
+                    <span className="mr-2 mt-1">⚠️</span>
+                    <div className="text-sm">{error}</div>
                   </div>
                 </div>
               )}
 
-              {/* Botão de Comprar melhorado */}
+              {/* Botão de Comprar */}
               <button
                 onClick={handleSubmit}
                 disabled={loading || !validateForm()}
@@ -255,7 +249,7 @@ export default function RifaPage() {
               </button>
             </div>
           ) : (
-            /* Tela PIX otimizada para mobile */
+            /* Tela PIX */
             <div className="text-center space-y-5">
               <div className="inline-block p-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full mb-4 animate-bounce">
                 <span className="text-4xl">🎉</span>
@@ -274,31 +268,33 @@ export default function RifaPage() {
                 </p>
               </div>
 
-              {pixData.pix.base64 && (
+              {/* QR Code */}
+              {(pixData.pix?.base64 || pixData.base64) && (
                 <div className="bg-white p-5 rounded-2xl border-2 border-gray-200 mb-5 shadow-lg">
                   <p className="text-base font-semibold text-gray-700 mb-4">
                     📱 Escaneie o QR Code:
                   </p>
                   <div className="bg-gray-50 p-4 rounded-xl">
                     <Image
-                      src={`data:image/png;base64,${pixData.pix.base64}`}
+                      src={`data:image/png;base64,${pixData.pix?.base64 || pixData.base64}`}
                       alt="QR Code PIX"
                       className="mx-auto max-w-full h-auto rounded-lg shadow-md"
-                      width={300}   // defina largura
-                      height={300}  // defina altura
-                      unoptimized   // importante para base64
+                      width={300}
+                      height={300}
+                      unoptimized
                     />
                   </div>
                 </div>
               )}
 
-              {pixData.pix.code && (
+              {/* Código PIX */}
+              {(pixData.pix?.code || pixData.code) && (
                 <div className="bg-gray-50 p-5 rounded-2xl border-2 border-gray-200">
                   <p className="text-base font-semibold text-gray-700 mb-4">
                     💻 Ou copie o código PIX:
                   </p>
                   <div className="bg-white p-4 rounded-xl border text-xs font-mono break-all text-gray-800 mb-4 max-h-20 overflow-y-auto">
-                    {codepix}
+                    {pixData.pix?.code || pixData.code}
                   </div>
                   <button
                     onClick={copyPixCode}
@@ -321,6 +317,8 @@ export default function RifaPage() {
               <button
                 onClick={() => {
                   setPixData(null);
+                  setError('');
+                  setDebugInfo('');
                   setFormData({
                     phone: '',
                     document: '',

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "RIFA DA AMANDA",
-  description: "rIFA amanda oliveira",
+  description: "rifa amanda oliveira",
 };
 
 export default function RootLayout({ children }) {
