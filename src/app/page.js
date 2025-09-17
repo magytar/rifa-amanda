@@ -161,6 +161,7 @@ export default function RifaPage() {
                   maxLength="15"
                   className="w-full p-4 text-base border-2 font-black border-gray-200 rounded-2xl focus:border-pink-400 focus:outline-none transition-all duration-300 focus:shadow-lg focus:shadow-pink-100"
                   placeholder="(11) 99999-9999"
+                  style="-webkit-appearance: none;"
                 />
               </div>
 
