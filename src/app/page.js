@@ -13,7 +13,7 @@ export default function RifaPage() {
   const [pixData, setPixData] = useState(null);
   const [error, setError] = useState('');
   const [debugInfo, setDebugInfo] = useState('');
-  const TICKET_PRICE = 3.79;
+  const TICKET_PRICE = 3.89;
 
   const formatCurrency = (value) => {
     return value.toLocaleString('pt-BR', {
@@ -125,11 +125,8 @@ export default function RifaPage() {
         <div className="bg-gradient-to-r from-pink-500 to-purple-600 px-6 py-8 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="relative z-10">
-            <div className="inline-block p-3 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-              <span className="text-4xl">🎯</span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-              🌟 RIFA DA AMANDA 🌟
+              🌟 RIFA BENEFICENTE 🌟
             </h1>
             <p className="text-white/90 text-lg font-medium">
               Bilhetes por apenas {formatCurrency(TICKET_PRICE)}
